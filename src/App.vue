@@ -42,7 +42,7 @@ const {
   handleChange,
 } = useField(
   'password',
-  toFieldValidator(z.string.min(5, { message: 'Trop court !' }))
+  toFieldValidator(z.string().min(5, { message: 'Trop court !' }))
 );
 </script>
 
