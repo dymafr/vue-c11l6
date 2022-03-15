@@ -26,11 +26,12 @@ import { useField, useForm } from 'vee-validate';
 import { z } from 'zod';
 import { toFieldValidator } from '@vee-validate/zod';
 
-const promise = new Promise((resolve, reject) => {
-  setTimeout(() => {
-    resolve(false);
-  }, 3000);
-});
+const promise = (valeur: boolean) =>
+  new Promise((resolve, reject) => {
+    setTimeout(() => {
+      resolve(valeur);
+    }, 3000);
+  });
 
 const { meta: metaForm } = useForm();
 
@@ -42,7 +43,16 @@ const {
   handleChange,
 } = useField(
   'password',
-  toFieldValidator(z.string().min(5, { message: 'Trop court !' }))
+  toFieldValidator(
+    z
+      .string()
+      .min(5, { message: 'Trop court !' })
+      .refine(
+        async (data) =>
+          (await data) === 'valid' ? promise(true) : promise(false),
+        { message: 'erreur' }
+      )
+  )
 );
 </script>
 
