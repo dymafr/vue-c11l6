@@ -42,7 +42,7 @@ const {
   handleBlur,
   handleChange,
 } = useField(
-  'password',
+  'username',
   toFieldValidator(
     z
       .string()
