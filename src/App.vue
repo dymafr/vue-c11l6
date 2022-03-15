@@ -52,7 +52,8 @@ const {
           (await data) === 'valid' ? promise(true) : promise(false),
         { message: 'erreur' }
       )
-  )
+  ),
+  { validateOnValueUpdate: false }
 );
 </script>
 
