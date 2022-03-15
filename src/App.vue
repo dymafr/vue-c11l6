@@ -1,14 +1,28 @@
 <template>
   <form>
     <div>
-      <input v-model="usernameValue" type="text" placeholder="Prénom" />
+      <input
+        :class="{
+          success:
+            meta.touched && meta.valid && meta.validated && !meta.pending,
+          error: meta.touched && !meta.valid && meta.validated && !meta.pending,
+        }"
+        @focus="handleBlur"
+        @blur="handleChange"
+        v-model="usernameValue"
+        type="text"
+        placeholder="Prénom"
+      />
     </div>
+    <p v-if="meta.pending">Chargement...</p>
     <p v-if="errorMessage">{{ errorMessage }}</p>
+    <pre>{{ meta }}</pre>
+    <pre>{{ metaForm }}</pre>
   </form>
 </template>
 
 <script setup lang="ts">
-import { useField } from 'vee-validate';
+import { useField, useForm } from 'vee-validate';
 import { z } from 'zod';
 import { toFieldValidator } from '@vee-validate/zod';
 
@@ -17,6 +31,8 @@ const promise = new Promise((resolve, reject) => {
     resolve(false);
   }, 3000);
 });
+
+const { meta: metaForm } = useForm();
 
 const {
   value: usernameValue,
