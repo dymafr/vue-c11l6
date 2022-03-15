@@ -1,30 +1,16 @@
 <template>
   <form>
     <div>
-      <input
-        v-model="passwordValue"
-        type="password"
-        placeholder="Mot de passe"
-      />
-      <input
-        v-model="validatePasswordValue"
-        @blur="handleChange"
-        type="password"
-        placeholder="Vérifier le mot de passe"
-      />
+      <input v-model="usernameValue" type="text" placeholder="Prénom" />
     </div>
-    <p v-if="confirmPasswordError">{{ confirmPasswordError }}</p>
-    <div>
-      <input v-model="emailValue" type="email" placeholder="Email" />
-    </div>
-    <p v-if="emailError">{{ emailError }}</p>
+    <p v-if="errorMessage">{{ errorMessage }}</p>
   </form>
 </template>
 
 <script setup lang="ts">
-import { useForm, useField } from 'vee-validate';
+import { useField } from 'vee-validate';
 import { z } from 'zod';
-import { toFormValidator } from '@vee-validate/zod';
+import { toFieldValidator } from '@vee-validate/zod';
 
 const promise = new Promise((resolve, reject) => {
   setTimeout(() => {
@@ -32,30 +18,24 @@ const promise = new Promise((resolve, reject) => {
   }, 3000);
 });
 
-const validationSchema = z
-  .object({
-    password: z.string(),
-    validatePassword: z.string(),
-    email: z
-      .string()
-      .refine(async (data) => await promise, { message: 'Email non valide' }),
-  })
-  .refine((data) => data.password === data.validatePassword, {
-    path: ['validatePassword'],
-    message: 'Les mots de passe ne correspondent pas',
-  });
-
-useForm({
-  validationSchema: toFormValidator(validationSchema),
-});
-
-const { value: passwordValue } = useField('password');
 const {
-  value: validatePasswordValue,
+  value: usernameValue,
+  errorMessage,
+  meta,
+  handleBlur,
   handleChange,
-  errorMessage: confirmPasswordError,
-} = useField('validatePassword', null, { validateOnValueUpdate: false });
-const { value: emailValue, errorMessage: emailError } = useField('email');
+} = useField(
+  'password',
+  toFieldValidator(z.string.min(5, { message: 'Trop court !' }))
+);
 </script>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+.success {
+  border-color: green;
+}
+
+.error {
+  border-color: red;
+}
+</style>
